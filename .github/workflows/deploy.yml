@@ -49,19 +49,19 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           key: ${{ secrets.DEPLOY_KEY }}
-        script: |
-          set -e
-          cd /var/www/good-morning
-          php artisan down || true
-          git pull
-          npm run build
-          composer install --prefer-dist --no-progress --no-ansi
-          chown -R www-data:www-data *
-          php artisan migrate --force
-          php artisan cache:clear
-          php artisan auth:clear-resets
-          php artisan route:cache
-          php artisan config:cache
-          php artisan view:cache
-          php artisan up
+          script: |
+            set -e
+            cd /var/www/good-morning
+            php artisan down || true
+            git pull
+            npm run build
+            composer install --prefer-dist --no-progress --no-ansi
+            chown -R www-data:www-data *
+            php artisan migrate --force
+            php artisan cache:clear
+            php artisan auth:clear-resets
+            php artisan route:cache
+            php artisan config:cache
+            php artisan view:cache
+            php artisan up
 
