@@ -1,0 +1,20 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+/** thank you https://csshero.org/mesher/ */
+.bg-mesh {
+    --opacity: 0.05;
+    background-color: hsla(224.71, 100%, 80%, var(--opacity));
+    background-image:
+            radial-gradient(at 53% 66%, hsla(222,98%,62%, var(--opacity)) 0px, transparent 50%),
+            radial-gradient(at 38% 30%, hsla(330,88%,66%, var(--opacity)) 0px, transparent 50%),
+            radial-gradient(at 98% 5%, hsla(279,76%,74%, var(--opacity)) 0px, transparent 50%),
+            radial-gradient(at 96% 15%, hsla(103,88%,72%, var(--opacity)) 0px, transparent 50%),
+            radial-gradient(at 16% 82%, hsla(289,99%,60%, var(--opacity)) 0px, transparent 50%),
+            radial-gradient(at 67% 46%, hsla(330,66%,71%, var(--opacity)) 0px, transparent 50%),
+            radial-gradient(at 6% 40%, hsla(69,95%,62%, var(--opacity)) 0px, transparent 50%);
+    background-size: 100vw 100vh;
+}
