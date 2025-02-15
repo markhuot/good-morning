@@ -6,6 +6,7 @@ import React, {PropsWithChildren, useEffect, useState} from 'react';
 import {AddTodo} from "../components/AddTodo";
 import {Todo} from "../components/Todo";
 import {completeTodo, deferTodo, deleteTodo, toggleTimer} from "../components/Actions";
+import {DateControls} from "../components/DateControls";
 
 async function php(strings, ...values) {
     return router.post('/handler', {
@@ -53,10 +54,22 @@ export default function Dashboard({ date, todos, notes }) {
         useSensor(PointerSensor),
     )
 
+    const handleShare = async () => {
+        const clipboardItemData = {
+            'text/html': 'Today,<br/><br/><ul>' + todos.map(todo => `<li>${todo.title}</li>`).join('') + '</ul>',
+            'text/plain': "Today,\n\n" + todos.map(todo => `- ${todo.title}`).join("\n"),
+        }
+        const clipboardItem = new ClipboardItem(clipboardItemData);
+        await navigator.clipboard.write([clipboardItem]);
+    }
+
     return <div className="mt-[clamp(0px,calc((100vw-1100px)/2),100px)] min-h-screen md:min-h-0 mx-auto max-w-[1100px] bg-white border border-slate-100 border-b-2 border-b-blue-300 rounded-lg overflow-hidden shadow-lg space-y-8 flex items-stretch">
         <div className="flex flex-col md:flex-row flex-grow">
             <div className="md:w-1/2 pb-12">
-                <h1><DateControls date={date}/></h1>
+                <h1 className="flex justify-between items-baseline pr-8">
+                    <DateControls date={date}/>
+                    <button className="text-slate-400 hover:text-black hover:bg-slate-100 rounded inline-block px-2" onClick={handleShare}>&#9099;</button>
+                </h1>
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={todos.map(todo => todo.id)} strategy={verticalListSortingStrategy}>
                         <ul className="mt-6">
@@ -113,38 +126,4 @@ function Row({ todo, moveTodo }: PropsWithChildren<{todo: any}>) {
         <span className="text-slate-200 hover:text-slate-500 relative -left-[1em]" {...listeners}>&#x28ff;</span>
         <Todo todo={todo}/>
     </li>
-}
-
-function DateControls({ date }) {
-    const weekdayFormatter = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
-    const dayMonthFormatter = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
-
-    const weekday = weekdayFormatter.format(new Date(date+'T00:00:00'));
-    const dayMonth = dayMonthFormatter.format(new Date(date+'T00:00:00'));
-
-    const yesterday = new Date(date+'T00:00:00');
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const tomorrow = new Date(date+'T00:00:00');
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const handleKeyDown = event => {
-        if (event.code === 'ArrowRight') {
-            router.get(`?date=${tomorrow.toISOString().replace(/\T.+$/, '')}`);
-        }
-        if (event.code === 'ArrowLeft') {
-            router.get(`?date=${yesterday.toISOString().replace(/\T.+$/, '')}`);
-        }
-    };
-
-    return <div className="flex gap-4 px-10 pt-12 text-lg">
-        <Link className="group hover:text-slate-950" href="/">
-            <strong className="text-slate-950 font-bold mr-1 group-hover:underline">{weekday}</strong>
-            <span className="text-slate-400">{dayMonth}</span>
-        </Link>
-        <div tabIndex="0" onKeyDown={handleKeyDown}>
-            <Link className="text-slate-400 hover:text-black hover:bg-slate-100 rounded inline-block px-2" tabIndex="-1" href={`?date=${yesterday.toISOString().replace(/\T.+$/, '')}`}>&larr;</Link>
-            <Link className="text-slate-400 hover:text-black hover:bg-slate-100 rounded inline-block px-2" tabIndex="-1" href={`?date=${tomorrow.toISOString().replace(/\T.+$/, '')}`}>&rarr;</Link>
-        </div>
-    </div>
 }
