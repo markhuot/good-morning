@@ -1,12 +1,12 @@
 import React from "react";
 import {router} from "@inertiajs/react";
 
-function php(strings, ...values) {
-    return router.post('/handler', {
-        hash: strings[0],
-        params: values,
-    });
-}
+// function php(strings, ...values) {
+    // return router.post('/handler', {
+    //     hash: strings[0],
+    //     params: values,
+    // });
+// }
 
 // function php(strings, ...values) {
 //     return formData => {
@@ -18,31 +18,49 @@ function php(strings, ...values) {
 //     }
 // }
 
-const addTodo = formData => php`
+function php(options={}) {
+    if (options instanceof FormData) {
+        options = {body: Object.fromEntries(options.entries())};
+    }
+
+    if (options instanceof SubmitEvent) {
+        options = {body: Object.fromEntries(options.formData.entries())};
+    }
+
+    return (strings, ...params) => {
+        options.body = options.body || {};
+        options.body._hash = strings[0];
+        options.body._params = params;
+
+        return router.post('/handler', options);
+    }
+}
+
+// const addTodo = formData => php`
+//     $maxSortOrder = auth()->user()->todos()
+//         ->where('day', '=', ${formData.get('date')})
+//         ->max('sort_order');
+// 
+//     return auth()->user()->todos()->create([
+//         'title' => ${formData.get('title')},
+//         'day' => \Carbon\Carbon::createFromFormat('Y-m-d', ${formData.get('date')}),
+//         'sort_order' => $maxSortOrder + 1,
+//     ]);
+// `;
+
+const addTodo = php`
+    $request = app(\App\Requests\Todo\StoreRequest::class);
+
     $maxSortOrder = auth()->user()->todos()
-        ->where('day', '=', ${formData.get('date')})
+        ->where('day', '=', $request->date->format('Y-m-d'))
         ->max('sort_order');
 
     return auth()->user()->todos()->create([
-        'title' => ${formData.get('title')},
-        'day' => \Carbon\Carbon::createFromFormat('Y-m-d', ${formData.get('date')}),
+        'title' => $request->title,
+        'day' => $request->date,
         'sort_order' => $maxSortOrder + 1,
     ]);
-`;
-
-// const addTodo = php`
-//     $request = app(\App\Requests\Todo\StoreRequest::class);
-//
-//     $maxSortOrder = auth()->user()->todos()
-//         ->where('day', '=', $request->date->format('Y-m-d'))
-//         ->max('sort_order');
-//
-//     return auth()->user()->todos()->create([
-//         'title' => $request->title,
-//         'day' => $request->date,
-//         'sort_order' => $maxSortOrder + 1,
-//     ]);
-// `
+`
 
 export function AddTodo({ date }) {
     return (
