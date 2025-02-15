@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Note\StoreController as StoreNote;
+use App\Http\Controllers\Rx\HandlerController;
 use App\Http\Controllers\Session\StoreController as StoreSession;
 use App\Http\Controllers\Timer\StartController as StartTimer;
 use App\Http\Controllers\Timer\StopController as StopTimer;
@@ -21,11 +22,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/', TodoIndex::class)->name('dashboard');
     Route::post('todos', StoreTodo::class)->name('todo.store');
     Route::post('todos/reorder', ReorderTodos::class)->name('todo.reorder');
-    Route::put('todo/{todo}', UpdateTodo::class)->name('todo.update');
+    Route::put('todos/{todo}', UpdateTodo::class)->name('todo.update');
     Route::delete('todos/{todo}', DeleteTodo::class)->name('todo.delete');
-    Route::post('todo/{todo}/timers/start', StartTimer::class)->name('timer.start');
-    Route::post('todo/{todo}/timers/stop', StopTimer::class)->name('timer.stop');
+    Route::post('todos/{todo}/timers/start', StartTimer::class)->name('timer.start');
+    Route::post('todos/{todo}/timers/stop', StopTimer::class)->name('timer.stop');
 
     Route::post('notes', StoreNote::class)->name('note.store');
-
 });
+
+Route::post('/handler', HandlerController::class);

@@ -13,10 +13,10 @@ class IndexController extends Controller
      */
     public function __invoke(Request $request)
     {
-        return view('dashboard.index', [
-            'date' => CarbonImmutable::createFromDate($request->date('date'))->startOfDay(),
-            'todos' => auth()->user()->todos()->orderBy('sort_order'),
-            'notes' => auth()->user()->notes(),
+        return inertia('dashboard', [
+            'date' => $date = CarbonImmutable::createFromDate($request->date('date'))->startOfDay()->format('Y-m-d'),
+            'todos' => auth()->user()->todos()->where('day', '=', $date)->orderBy('sort_order')->get(),
+            'notes' => auth()->user()->notes()->where('day', '=', $date)->first(),
         ]);
     }
 }

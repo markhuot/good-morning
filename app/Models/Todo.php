@@ -7,13 +7,12 @@ use Carbon\CarbonImmutable;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Rxable;
 
-/**
- * @property CarbonImmutable $day
- */
 class Todo extends Model
 {
     use HasFactory;
+    use Rxable;
 
     protected $fillable = [
         'title',

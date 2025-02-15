@@ -1,15 +1,15 @@
-<?php
+<template>
+    <form action="addTodo">
+        <input type="hidden" name="date" value={date}/>
+        <input type="text" name="title"/>
+        <button type="submit">Add</button>
+    </form>
+</template>
 
-namespace App\Http\Controllers\Todo;
+<script setup>
+    const addTodo = php`
+        $request = app(StoreRequest::class);
 
-use App\Http\Controllers\Controller;
-use App\Requests\Todo\StoreRequest;
-use Illuminate\Http\Request;
-
-class StoreController extends Controller
-{
-    public function __invoke(StoreRequest $request)
-    {
         $maxSortOrder = auth()->user()->todos()
             ->where('day', '=', $request->date->format('Y-m-d'))
             ->max('sort_order');
@@ -19,7 +19,5 @@ class StoreController extends Controller
             'day' => $request->date,
             'sort_order' => $maxSortOrder + 1,
         ]);
-
-        return redirect()->route('dashboard');
-    }
-}
+    `
+</script>
