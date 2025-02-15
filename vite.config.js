@@ -126,8 +126,6 @@ function writePhp(hash, code) {
     }
 
     fs.writeFileSync(filePath, getPhpSkeleton(hash, code), { encoding: 'utf8' });
-
-    console.log(`PHP code written to ${filePath}`);
 }
 
 function generateFilesystemSafeHash(input) {

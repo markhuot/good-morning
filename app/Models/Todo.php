@@ -27,6 +27,15 @@ class Todo extends Model
         'timer_started_at' => 'datetime',
     ];
 
+    static function booting()
+    {
+        static::saving(function ($model) {
+            if ($model->completed) {
+                $model->stopTimer();
+            }
+        });
+    }
+
     public function getTotalTime(): ?CarbonInterval
     {
         $totalTime = $this->timer_elapsed + ($this->timer_started_at?->diffInSeconds(now()) ?? 0);
