@@ -5,7 +5,7 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import {setPhpCallback} from './php'
 
-setPhpCallback((options) => router.post('/handler', options))
+setPhpCallback((options) => router.post(options.url, options.body))
 
 createInertiaApp({
   resolve: name => {

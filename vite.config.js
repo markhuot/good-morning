@@ -30,7 +30,7 @@ export default defineConfig({
                     if (!filter(id)) return;
 
                     // temp scope
-                    if (!id.match(/Actions\.tsx$/)) {
+                    if (!id.match(/AddTodo\.tsx$/)) {
                         return {
                             code,
                             map: null,
@@ -47,7 +47,7 @@ export default defineConfig({
                     //console.log(id);
                     let tagIndex = 0;
                     const ast = this.parse(code);
-                    //console.log(ast.body);
+                    console.log(ast.body[2].declarations);
                     simple(ast, {
                         ImportDeclaration(node) {
                             // check if the php import is renamed
@@ -58,15 +58,15 @@ export default defineConfig({
                                 //console.log(generate(node));
                                 const hash = generateFilesystemSafeHash(`${id}-${tagIndex++}`);
                                 const phpCodeBlocks = node.quasi.quasis.map(element => generate(element));
-                                
+
                                 writePhp(hash, phpCodeBlocks.flatMap((item, index) => {
                                     if (index < phpCodeBlocks.length - 1) {
                                         return [item, `$variable${index}`];
                                     }
-                                    
+
                                     return [item];
                                 }).join(''));
-                                
+
                                 node.quasi.quasis = node.quasi.quasis.map((quasi, index) => {
                                     return {
                                         ...quasi,

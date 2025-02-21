@@ -8,6 +8,8 @@ use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Rxable;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class Todo extends Model
 {
@@ -63,5 +65,14 @@ class Todo extends Model
     {
         $this->timer_elapsed = $this->timer_elapsed + ($this->timer_started_at?->diffInSeconds(now()) ?? 0);
         $this->timer_started_at = null;
+    }
+
+    public function scopeForDay(Builder $builder, string|Carbon $day)
+    {
+        if ($day instanceof Carbon) {
+            $day = $day->format('Y-m-d');
+        }
+
+        return $builder->where('day', $day);
     }
 }

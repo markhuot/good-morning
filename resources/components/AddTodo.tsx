@@ -1,7 +1,7 @@
 import React from "react";
-import {phpEventHandler} from "../js/php";
+import {php} from "../js/php";
 
-const addTodo = phpEventHandler`
+const addTodo = php`
     $request = app(\App\Requests\Todo\StoreRequest::class);
 
     $maxSortOrder = auth()->user()->todos()
@@ -14,6 +14,18 @@ const addTodo = phpEventHandler`
         'sort_order' => $maxSortOrder + 1,
     ]);
 `;
+
+// const addTodo = (formData) => php`
+//     $date = Carbon\Carbon::createFromFormat('Y-m-d', ${formData.get('date')});
+
+//     $maxSortOrder = auth()->user()->todos()->forDay($date)->max('sort_order');
+
+//     return auth()->user()->todos()->create([
+//         'title' => ${formData.get('title')},
+//         'day' => $date,
+//         'sort_order' => $maxSortOrder + 1,
+//     ]);
+// `;
 
 export function AddTodo({ date }) {
     return (

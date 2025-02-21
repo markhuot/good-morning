@@ -12,9 +12,13 @@ class HandlerController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $hash = $request->string('hash');
-        $params = $request->get('params') ?: [];
+        $hash = $request->string('_hash');
+        $params = $request->get('_params') ?: [];
 
-        app('App\Handlers\\Handle_' . $hash)(...$params);
+        foreach ($params as $key => $value) {
+            ${"variable".$key} = $value;
+        }
+        unset($params);
+        require(app_path('/Handlers/Handle_' . $hash.'.php'));
     }
 }
