@@ -1,8 +1,11 @@
 import './bootstrap';
 
 import React from 'react';
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
+import {setPhpCallback} from './php'
+
+setPhpCallback((options) => router.post('/handler', options))
 
 createInertiaApp({
   resolve: name => {

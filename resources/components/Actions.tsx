@@ -1,59 +1,93 @@
 import React from "react";
-import {router} from "@inertiajs/react";
 import {Timer} from "./Timer";
+import {compose, php} from "../js/php"
 
-function php(strings, ...values) {
-    return router.post('/handler', {
-        hash: strings[0],
-        params: values,
-    });
-}
 
-export const completeTodo = (todoId) => {
-    php`
-        $todo = \App\Models\Todo::findOrFail(${todoId});
-        $todo->completed = !$todo->completed;
-        $todo->save();
-    `
-}
+// export const completeTodo = (todo) => php`
+//     bind: \App\Models\Todo $todo
+//     authorize: ['update', $todo]
+//     ---
+//     $todo = \App\Models\Todo::findOrFail(${todo});
+//     auth()->user()->can('update', $todo);
+//     Gate::authorize('update', $todo);
 
-export const deleteTodo = (todoId) => {
+//     $todo->completed = !$todo->completed;
+//     $todo->save();
+// `({
+//     bind:{todo},
+//     middleware: 'can:update,todo',
+//     authorize: ['update', todo],
+//     call: `fn (\App\Models\Todo $todo) => $todo`,
+// });
+
+
+// export const completeTodo = (todo) => php`
+//     return function (\App\Models\Todo $todo) {
+//         $todo->completed = !$todo->completed;
+//         $todo->save();
+//     }
+// `({
+//     bind: {todo},
+//     middleware: 'can:update,todo',
+// });
+
+
+const before = (todo) => php`
+    use \App\Models\Todo;
+    $todo = Todo::findOrFail(${todo});
+    Gate::authorize('update', $todo);
+`
+
+// export const test1 = (todo) => compose(before(todo), php`$todo->delete();`);
+// export const test2 = (todo) => before(todo, php`$todo->delete();`);
+// export const test3 = (todo) => php(before, todo).exec`$todo->delete();`;
+// export const test4 = (todo) => before(todo)`$todo->delete();`;
+// export const test5 = (todo) => php`${before(todo)} $todo->delete();`;
+// export const test6 = before`$todo->delete();`;
+// export const test7 = (todo) => before(todo) + php`$todo->delete();`;
+// export const test8 = (todo) => [before(todo), php`$todo->delete();`];
+
+/**
+ * `compose(...codes)` shouldn't do anything on compilation. Instead it should
+ * trigger a single HTTP request with _two_ hashes to be run.
+ * 
+ * On the PHP side the two hashes should call `require ${hash}.php` with the
+ * appropriate variables filled in before the require statement. In pseudo code
+ * it would look like,
+ * 
+ * function handle($params) {
+ *   $variable0 = $params[0];
+ *   $variable1 = $params[1];
+ *   unset($params);
+ *   foreach ($hashes as $hash) {
+ *     require "{$hash}.php";
+ *   }
+ * }
+ */
+export const completeTodo = (todo) => compose(before(todo), php`
+    $todo->completed = !$todo->completed;
+    $todo->save();
+`);
+
+export const deleteTodo = (todo) => {
     if (! confirm('Are you sure you want to delete this todo?')) {
         return;
     }
 
-    php`
-        \App\Models\Todo::findOrFail(${todoId})->delete();
-    `
+    php`$todo->delete();`;
 }
 
-export const deferTodo = (todoId) => {
-    php`
-        $todo = \App\Models\Todo::findOrFail(${todoId});
-        $todo->day = $todo->day->addDay();
-        $todo->save();
-    `
-}
+export const deferTodo = (todoId) => php`
+    $todo->day = $todo->day->addDay();
+    $todo->save();
+`;
 
-export const toggleTimer = (todoId) => {
-    php`
-        $todo = \App\Models\Todo::where('id', '=', ${todoId})->firstOrFail();
-        if ($todo->timer_started_at) {
-            $todo->stopTimer();
-            $todo->save();
-        } else {
-            $todo->startTimer();
-            $todo->save();
-        }
-        $todo->save();
-    `
-}
+export const toggleTimer = (todoId) => php`
+    $todo->toggleTimer();
+    $todo->save();
+`;
 
 export function Actions({todo}) {
-    function toggleTimer() {
-        router.post('/todos/' + todo.id + '/timers/' + (todo.timer_started_at ? 'stop' : 'start'));
-    }
-
     return <div className="group inline-block -mt-2 -ml-4 hover:absolute hover:bg-white hover:z-50 hover:w-48 hover:shadow-md rounded-lg hover:overflow-hidden">
         <ul>
             <li className="">

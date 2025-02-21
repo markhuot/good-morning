@@ -47,6 +47,13 @@ class Todo extends Model
         return CarbonImmutable::now()->subSeconds($totalTime)->diff(now());
     }
 
+    public function toggleTimer()
+    {
+        $this->timer_started_at
+            ? $this->stopTimer()
+            : $this->startTimer();
+    }
+
     public function startTimer()
     {
         $this->timer_started_at = now();

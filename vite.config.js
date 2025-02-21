@@ -3,11 +3,14 @@ import laravel from 'laravel-vite-plugin';
 import { createFilter } from '@rollup/pluginutils';
 import * as fs from 'fs';
 import * as path from 'path';
+import {simple} from 'acorn-walk';
+import {generate} from 'astring';
+import { arrayBuffer } from 'stream/consumers';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: ['resources/css/app.css', 'resources/js/app.tsx'],
             refresh: true,
         }),
         (function (options={}) {
@@ -26,6 +29,14 @@ export default defineConfig({
                 transform(code, id) {
                     if (!filter(id)) return;
 
+                    // temp scope
+                    if (!id.match(/Actions\.tsx$/)) {
+                        return {
+                            code,
+                            map: null,
+                        }
+                    }
+
                     if (code.indexOf('php`') === -1) {
                         return {
                             code,
@@ -33,8 +44,51 @@ export default defineConfig({
                         };
                     }
 
-                    const relativeId = path.relative(viteRoot, id);
-                    code = parseCodeForTaggedStrings(code, relativeId);
+                    //console.log(id);
+                    let tagIndex = 0;
+                    const ast = this.parse(code);
+                    //console.log(ast.body);
+                    simple(ast, {
+                        ImportDeclaration(node) {
+                            // check if the php import is renamed
+                            // console.log(node);
+                        },
+                        TaggedTemplateExpression(node) {
+                            if (node.tag.name === 'php') {
+                                //console.log(generate(node));
+                                const hash = generateFilesystemSafeHash(`${id}-${tagIndex++}`);
+                                const phpCodeBlocks = node.quasi.quasis.map(element => generate(element));
+                                
+                                writePhp(hash, phpCodeBlocks.flatMap((item, index) => {
+                                    if (index < phpCodeBlocks.length - 1) {
+                                        return [item, `$variable${index}`];
+                                    }
+                                    
+                                    return [item];
+                                }).join(''));
+                                
+                                node.quasi.quasis = node.quasi.quasis.map((quasi, index) => {
+                                    return {
+                                        ...quasi,
+                                        value: {
+                                            cooked: index === 0 ? hash : '',
+                                            raw: index === 0 ? hash : '',
+                                        }
+                                    }
+                                });
+
+                            }
+                        },
+                        CallExpression(node) {
+                            if (node.callee.type === 'Identifier' && node.callee.name === 'compose') {
+                                //console.log(node.arguments);
+                            }
+                        }
+                    });
+                    code = generate(ast, {comments: true});
+
+                    // const relativeId = path.relative(viteRoot, id);
+                    // code = parseCodeForTaggedStrings(code, relativeId);
 
                     return {
                         code,
@@ -108,15 +162,6 @@ function parseCodeForTaggedStrings(code, id) {
     return javascriptCode;
 }
 
-function generateRandomString(length) {
-    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
-
 function writePhp(hash, code) {
     const filePath = path.join(__dirname, 'app', 'Handlers', `Handle_${hash}.php`);
 
@@ -140,14 +185,6 @@ function getPhpSkeleton(hash, code) {
     return `
 <?php
 
-namespace App\\Handlers;
-
-class Handle_${hash}
-{
-    public function __invoke(...$params)
-    {
-        ${code}
-    }
-}
-    `.trim() + "\n";
+${code}
+`.trim() + "\n";
 }
