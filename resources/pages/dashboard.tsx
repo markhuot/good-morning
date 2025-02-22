@@ -7,29 +7,28 @@ import {AddTodo} from "../components/AddTodo";
 import {Todo} from "../components/Todo";
 import {completeTodo, deferTodo, deleteTodo, toggleTimer} from "../components/Actions";
 import {DateControls} from "../components/DateControls";
+import {php} from "@markhuot/synapse/php";
 
-async function php(strings, ...values) {
-    return router.post('/handler', {
-        hash: strings[0],
-        params: values,
-    });
-}
+const reorderTodos = (orderedIds) => php`
+    use \App\Models\Todo;
 
-export const reorderTodos = (orderedIds) => {
-    php`
-        $todos = \App\Models\Todo::query()
-            ->whereIn('id', ${orderedIds})
-            ->each(fn ($todo) => $todo->update([
-                'sort_order' => array_search($todo->id, ${orderedIds})
-            ]));
-    `
-}
+    $todos = Todo::query()
+        ->whereIn('id', ${orderedIds})
+        ->each(fn ($todo) => $todo->update([
+            'sort_order' => array_search($todo->id, ${orderedIds})
+        ]));
+`.execute();
+
+const updateNotes = (day, contents) => php`
+    auth()->user()->notes()->upsert([
+        'day' => ${day},
+        'contents' => ${contents},
+    ], [
+        'user_id', 'day',
+    ]);
+`.execute();
 
 export default function Dashboard({ date, todos, notes }) {
-    function updateNotes(event) {
-        router.post('/notes', { date, contents: event.target.value });
-    }
-
     function handleDragEnd(event) {
         const ids = todos.map(todo => todo.id);
         const oldIndex = ids.indexOf(event.active.id);
@@ -80,7 +79,7 @@ export default function Dashboard({ date, todos, notes }) {
                 <AddTodo date={date}/>
             </div>
             <div className="md:w-1/2 bg-slate-50 relative flex-grow min-h-[50vh]">
-                <textarea className="w-full h-full py-14 px-10 bg-transparent peer resize-none" placeholder=" " onInput={updateNotes}>{notes?.contents}</textarea>
+                <textarea className="w-full h-full py-14 px-10 bg-transparent peer resize-none" placeholder=" " onInput={(event) => updateNotes(date, event.target.value)}>{notes?.contents}</textarea>
                 <p className="hidden peer-placeholder-shown:block pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-300">If you fail to plan, you plan to fail</p>
             </div>
         </div>

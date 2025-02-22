@@ -1,37 +1,33 @@
 import React from "react";
-import {php} from "../js/php";
+import {php} from "@markhuot/synapse/php";
+import {usePage} from "@inertiajs/react";
 
 const addTodo = php`
-    $request = app(\App\Requests\Todo\StoreRequest::class);
+    use App\Models\Todo;
+    use App\Requests\Todo\StoreRequest;
+
+    $request = app(StoreRequest::class);
+    Gate::authorize('create', Todo::class);
 
     $maxSortOrder = auth()->user()->todos()
         ->where('day', '=', $request->date->format('Y-m-d'))
         ->max('sort_order');
 
-    return auth()->user()->todos()->create([
+    auth()->user()->todos()->create([
         'title' => $request->title,
         'day' => $request->date,
         'sort_order' => $maxSortOrder + 1,
     ]);
-`;
-
-// const addTodo = (formData) => php`
-//     $date = Carbon\Carbon::createFromFormat('Y-m-d', ${formData.get('date')});
-
-//     $maxSortOrder = auth()->user()->todos()->forDay($date)->max('sort_order');
-
-//     return auth()->user()->todos()->create([
-//         'title' => ${formData.get('title')},
-//         'day' => $date,
-//         'sort_order' => $maxSortOrder + 1,
-//     ]);
-// `;
+`.execute;
 
 export function AddTodo({ date }) {
+    const {errors} = usePage().props;
+
     return (
         <form action={addTodo}>
             <input type="hidden" name="date" value={date}/>
-            <input type="text" name="title"/>
+            <input type="text" name="title" placeholder="title"/>
+            {errors.title && <div>{errors.title}</div>}
             <button type="submit">Add</button>
         </form>
     );

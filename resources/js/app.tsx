@@ -3,9 +3,11 @@ import './bootstrap';
 import React from 'react';
 import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
-import {setPhpCallback} from './php'
+import { setRequestHandler } from '@markhuot/synapse/php';
 
-setPhpCallback((options) => router.post(options.url, options.body))
+setRequestHandler((options) => {
+  return router.post(options.url, options.body, options);
+})
 
 createInertiaApp({
   resolve: name => {

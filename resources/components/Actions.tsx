@@ -1,91 +1,40 @@
 import React from "react";
 import {Timer} from "./Timer";
-import {compose, php} from "../js/php"
+import {compose, php} from "@markhuot/synapse/php"
 
-
-// export const completeTodo = (todo) => php`
-//     bind: \App\Models\Todo $todo
-//     authorize: ['update', $todo]
-//     ---
-//     $todo = \App\Models\Todo::findOrFail(${todo});
-//     auth()->user()->can('update', $todo);
-//     Gate::authorize('update', $todo);
-
-//     $todo->completed = !$todo->completed;
-//     $todo->save();
-// `({
-//     bind:{todo},
-//     middleware: 'can:update,todo',
-//     authorize: ['update', todo],
-//     call: `fn (\App\Models\Todo $todo) => $todo`,
-// });
-
-
-// export const completeTodo = (todo) => php`
-//     return function (\App\Models\Todo $todo) {
-//         $todo->completed = !$todo->completed;
-//         $todo->save();
-//     }
-// `({
-//     bind: {todo},
-//     middleware: 'can:update,todo',
-// });
-
-
-const before = (todo) => php`
+const before = (todoId) => php`
     use \App\Models\Todo;
-    $todo = Todo::findOrFail(${todo});
-    Gate::authorize('update', $todo);
+    $todo = Todo::findOrFail(${todoId});
 `
 
-// export const test1 = (todo) => compose(before(todo), php`$todo->delete();`);
-// export const test2 = (todo) => before(todo, php`$todo->delete();`);
-// export const test3 = (todo) => php(before, todo).exec`$todo->delete();`;
-// export const test4 = (todo) => before(todo)`$todo->delete();`;
-// export const test5 = (todo) => php`${before(todo)} $todo->delete();`;
-// export const test6 = before`$todo->delete();`;
-// export const test7 = (todo) => before(todo) + php`$todo->delete();`;
-// export const test8 = (todo) => [before(todo), php`$todo->delete();`];
-
-/**
- * `compose(...codes)` shouldn't do anything on compilation. Instead it should
- * trigger a single HTTP request with _two_ hashes to be run.
- * 
- * On the PHP side the two hashes should call `require ${hash}.php` with the
- * appropriate variables filled in before the require statement. In pseudo code
- * it would look like,
- * 
- * function handle($params) {
- *   $variable0 = $params[0];
- *   $variable1 = $params[1];
- *   unset($params);
- *   foreach ($hashes as $hash) {
- *     require "{$hash}.php";
- *   }
- * }
- */
-export const completeTodo = (todo) => compose(before(todo), php`
+export const completeTodo = (todoId) => compose(before(todoId), php`
+    Gate::authorize('update', $todo);
     $todo->completed = !$todo->completed;
     $todo->save();
-`);
+`).execute();
 
-export const deleteTodo = (todo) => {
+export const deleteTodo = (todoId) => {
     if (! confirm('Are you sure you want to delete this todo?')) {
         return;
     }
 
-    php`$todo->delete();`;
+    compose(before(todoId), php`
+        Gate::authorize('delete', $todo);
+        $todo->delete();
+    `).execute();
 }
 
-export const deferTodo = (todoId) => php`
+export const deferTodo = (todoId) => compose(before(todoId), php`
+    Gate::authorize('update', $todo);
     $todo->day = $todo->day->addDay();
     $todo->save();
-`;
+`).execute();
 
-export const toggleTimer = (todoId) => php`
+export const toggleTimer = (todoId) => compose(before(todoId), php`
+    Gate::authorize('update', $todo);
     $todo->toggleTimer();
     $todo->save();
-`;
+`).execute();
 
 export function Actions({todo}) {
     return <div className="group inline-block -mt-2 -ml-4 hover:absolute hover:bg-white hover:z-50 hover:w-48 hover:shadow-md rounded-lg hover:overflow-hidden">
@@ -108,7 +57,7 @@ export function Actions({todo}) {
                 </label>
             </li>
             <li className="hidden group-hover:block">
-                <form action={toggleTimer}>
+                <form action={() => toggleTimer(todo.id)}>
                     <button className="w-full text-left px-4 py-2 hover:bg-slate-50 flex justify-between">
                         <span>
                             {todo.timer_started_at ? (

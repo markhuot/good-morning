@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4e11a065d0b17679172f083e8ec15835",
+    "content-hash": "25030df9912cb96a2f5235e34d302a8c",
     "packages": [
         {
             "name": "amphp/amp",
@@ -3034,6 +3034,40 @@
                 }
             ],
             "time": "2024-12-08T08:18:47+00:00"
+        },
+        {
+            "name": "markhuot/synapse",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../synapse",
+                "reference": "50c58f3ac8c08cd19f6b0fc6daa3ad282c5f6299"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Synapse\\Laravel\\SynapseServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Synapse\\": "php/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "markhuot",
+                    "email": "mark@markhuot.com"
+                }
+            ],
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "monolog/monolog",
@@ -10288,7 +10322,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "markhuot/synapse": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
