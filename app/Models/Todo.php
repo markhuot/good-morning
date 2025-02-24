@@ -32,7 +32,7 @@ class Todo extends Model
     static function booting()
     {
         static::saving(function ($model) {
-            if ($model->completed) {
+            if ($model->isDirty('completed') && $model->completed) {
                 $model->stopTimer();
             }
         });
@@ -51,9 +51,9 @@ class Todo extends Model
 
     public function toggleTimer()
     {
-        $this->timer_started_at
-            ? $this->stopTimer()
-            : $this->startTimer();
+        $this->timer_started_at === null
+            ? $this->startTimer()
+            : $this->stopTimer();
     }
 
     public function startTimer()

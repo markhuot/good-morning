@@ -2,7 +2,7 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from 
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {Link, router} from '@inertiajs/react';
-import React, {PropsWithChildren, useEffect, useState} from 'react';
+import React, {PropsWithChildren, useEffect, useRef, useState} from 'react';
 import {AddTodo} from "../components/AddTodo";
 import {Todo} from "../components/Todo";
 import {completeTodo, deferTodo, deleteTodo, toggleTimer} from "../components/Actions";
@@ -50,7 +50,12 @@ export default function Dashboard({ date, todos, notes }) {
     }
 
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                delay: 250,
+                distance: 250,
+            },
+        }),
     )
 
     const handleShare = async () => {
@@ -94,6 +99,7 @@ function Row({ todo, moveTodo }: PropsWithChildren<{todo: any}>) {
         transform,
         transition,
     } = useSortable({id: todo.id});
+    const todoRef = useRef(null);
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -119,10 +125,14 @@ function Row({ todo, moveTodo }: PropsWithChildren<{todo: any}>) {
         if (event.code === 'F8') {
             toggleTimer(todo.id);
         }
+        if (event.code === 'Enter') {
+            event.preventDefault();
+            todoRef.current?.focus();
+        }
     }
 
-    return <li ref={setNodeRef} style={style} {...attributes} onKeyDown={handleKeyDown} className="py-2 px-10 focus:bg-blue-100 focus:outline-none">
-        <span className="text-slate-200 hover:text-slate-500 relative -left-[1em]" {...listeners}>&#x28ff;</span>
-        <Todo todo={todo}/>
+    return <li ref={setNodeRef} style={style} {...attributes} {...listeners} onKeyDown={handleKeyDown} className="py-2 px-10 focus-visible:bg-blue-100 focus-visible:outline-none [&:has([data-todo-title]:focus)]:bg-none [&:has([data-todo-title]:focus)]:ring-4 [&:has([data-todo-title]:focus)]:ring-blue-100 [&:has([data-todo-title]:focus)]:ring-inset">
+        {/*<span {...listeners} className="text-slate-200 hover:text-slate-500 relative -left-[1em]" >&#x28ff;</span>*/}
+        <Todo ref={todoRef} todo={todo}/>
     </li>
 }

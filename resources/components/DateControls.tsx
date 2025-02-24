@@ -23,12 +23,12 @@ export function DateControls({ date }) {
         }
     };
 
-    return <div className="flex gap-4 px-10 pt-12 text-lg">
-        <Link className="group hover:text-slate-950" href="/">
-            <strong className="text-slate-950 font-bold mr-1 group-hover:underline">{weekday}</strong>
-            <span className="text-slate-400">{dayMonth}</span>
+    return <div className="flex items-start gap-4 px-10 pt-12">
+        <Link className="group hover:text-slate-950 leading-none" href="/">
+            <strong className="text-slate-950 font-bold mr-1 group-hover:underline block text-2xl -mb-1">{weekday}</strong>
+            <span className="text-slate-400 text-sm">{dayMonth}</span>
         </Link>
-        <div tabIndex="0" onKeyDown={handleKeyDown}>
+        <div className="h-[2rem] flex items-center" tabIndex="0" onKeyDown={handleKeyDown}>
             <Link className="text-slate-400 hover:text-black hover:bg-slate-100 rounded inline-block px-2" tabIndex="-1" href={`?date=${yesterday.toISOString().replace(/\T.+$/, '')}`}>&larr;</Link>
             <Link className="text-slate-400 hover:text-black hover:bg-slate-100 rounded inline-block px-2" tabIndex="-1" href={`?date=${tomorrow.toISOString().replace(/\T.+$/, '')}`}>&rarr;</Link>
         </div>

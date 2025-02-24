@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25030df9912cb96a2f5235e34d302a8c",
+    "content-hash": "11f3f99167bcdb12e4e41ac0fe09cafc",
     "packages": [
         {
             "name": "amphp/amp",
@@ -3037,11 +3037,17 @@
         },
         {
             "name": "markhuot/synapse",
-            "version": "dev-main",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/markhuot/synapse.git",
+                "reference": "dfc07a37af6ad8c0e3fdb62239df97dd4e7c260d"
+            },
             "dist": {
-                "type": "path",
-                "url": "../synapse",
-                "reference": "50c58f3ac8c08cd19f6b0fc6daa3ad282c5f6299"
+                "type": "zip",
+                "url": "https://api.github.com/repos/markhuot/synapse/zipball/dfc07a37af6ad8c0e3fdb62239df97dd4e7c260d",
+                "reference": "dfc07a37af6ad8c0e3fdb62239df97dd4e7c260d",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -3056,6 +3062,7 @@
                     "Synapse\\": "php/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3065,9 +3072,11 @@
                     "email": "mark@markhuot.com"
                 }
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/markhuot/synapse/issues",
+                "source": "https://github.com/markhuot/synapse/tree/1.0.0"
+            },
+            "time": "2025-02-22T06:02:12+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -10322,9 +10331,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "markhuot/synapse": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -10,7 +10,7 @@
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
-        "markhuot/synapse": "dev-main",
+        "markhuot/synapse": "^1.0",
         "spatie/laravel-data": "^4.13"
     },
     "require-dev": {
@@ -60,12 +60,6 @@
             "dont-discover": []
         }
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../synapse"
-        }
-    ],
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
