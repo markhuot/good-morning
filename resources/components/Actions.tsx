@@ -65,8 +65,8 @@ export function Actions({todo}) {
                             <span className="{{$todo->timer_started_at?'inline-block':'hidden'}} absolute w-[200%] h-[200%] -mt-[50%] -ml-[50%] rounded motion-safe:animate-[spin_3s_linear_infinite] bg-gradient-to-b from-transparent via-transparent via-50% to-50% to-[color-mix(in_srgb,_var(--color)_30%,_transparent)]"></span>
                         </span>
                         <span className="hidden peer-[:not(:checked)]:inline-block absolute top-0 left-0 w-full h-full rounded border-2 border-[var(--color)] bg-white"></span>
-                        <span className="hidden peer-checked:inline-block absolute top-0 left-0 w-full h-full rounded border-2 border-[var(--color)] bg-[color-mix(in_srgb,_var(--color)_30%,_white)]">
-                            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--color)] font-bold">&#x2713;</span>
+                        <span className="hidden peer-checked:inline-block absolute top-0 left-0 w-full h-full rounded border-2 border-[color-mix(in_srgb,_var(--color)_40%,_white)] bg-[color-mix(in_srgb,_var(--color)_10%,_white)]">
+                            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[color-mix(in_srgb,_var(--color)_80%,_white)] font-bold">&#x2713;</span>
                         </span>
                     </span>
                     <span className="hidden group-hover:inline">

@@ -62,7 +62,10 @@ export function Todo({ todo, ref })  {
                 onKeyDown={handleKeyDown}
                 onBlur={handleBlur}
                 dangerouslySetInnerHTML={{__html: todo.title}}
-                className="focus:outline-none"
+                className={[
+                    'focus:outline-none',
+                    todo.completed ? 'text-slate-400' : '',
+                ].filter(Boolean).join(' ')}
             ></span>
         </div>
     );
