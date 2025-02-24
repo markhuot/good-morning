@@ -135,6 +135,15 @@ function Row({ todo, moveTodo }: PropsWithChildren<{todo: any}>) {
             event.preventDefault();
             todoRef.current?.focus();
         }
+        console.log(event);
+        if (event.code === 'KeyK') {
+            event.preventDefault();
+            event.target.previousElementSibling?.focus();
+        }
+        if (event.code === 'KeyJ') {
+            event.preventDefault();
+            event.target.nextElementSibling?.focus();
+        }
     }
 
     return <li ref={setNodeRef} style={style} {...attributes} {...listeners} onKeyDown={handleKeyDown} className="py-2 px-10 focus-visible:bg-blue-100 focus-visible:outline-none [&:has([data-todo-title]:focus)]:bg-none [&:has([data-todo-title]:focus)]:ring-4 [&:has([data-todo-title]:focus)]:ring-blue-100 [&:has([data-todo-title]:focus)]:ring-inset">
