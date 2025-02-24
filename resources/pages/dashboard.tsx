@@ -108,21 +108,27 @@ function Row({ todo, moveTodo }: PropsWithChildren<{todo: any}>) {
 
     const handleKeyDown = event => {
         if (event.code === 'Space') {
+            event.preventDefault();
             completeTodo(todo.id);
         }
         if (event.code === 'Backspace') {
+            event.preventDefault();
             deleteTodo(todo.id);
         }
         if (event.code === 'ArrowRight') {
+            event.preventDefault();
             deferTodo(todo.id);
         }
         if (event.code === 'ArrowUp') {
+            event.preventDefault();
             moveTodo(todo.id, -1);
         }
         if (event.code === 'ArrowDown') {
+            event.preventDefault();
             moveTodo(todo.id, 1);
         }
         if (event.code === 'F8') {
+            event.preventDefault();
             toggleTimer(todo.id);
         }
         if (event.code === 'Enter') {
