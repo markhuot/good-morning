@@ -3037,17 +3037,21 @@
         },
         {
             "name": "markhuot/synapse",
-            "version": "1.0.0",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/markhuot/synapse.git",
-                "reference": "dfc07a37af6ad8c0e3fdb62239df97dd4e7c260d"
+                "reference": "db59a35714350081a756c4ef7701dac44d006feb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markhuot/synapse/zipball/dfc07a37af6ad8c0e3fdb62239df97dd4e7c260d",
-                "reference": "dfc07a37af6ad8c0e3fdb62239df97dd4e7c260d",
+                "url": "https://api.github.com/repos/markhuot/synapse/zipball/db59a35714350081a756c4ef7701dac44d006feb",
+                "reference": "db59a35714350081a756c4ef7701dac44d006feb",
                 "shasum": ""
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.23",
+                "pestphp/pest-plugin-parallel": "^1.2"
             },
             "type": "library",
             "extra": {
@@ -3072,11 +3076,12 @@
                     "email": "mark@markhuot.com"
                 }
             ],
+            "description": "A neural-level connection between JavaScript and PHP",
             "support": {
                 "issues": "https://github.com/markhuot/synapse/issues",
-                "source": "https://github.com/markhuot/synapse/tree/1.0.0"
+                "source": "https://github.com/markhuot/synapse/tree/1.0.5"
             },
-            "time": "2025-02-22T06:02:12+00:00"
+            "time": "2025-02-25T13:31:42+00:00"
         },
         {
             "name": "monolog/monolog",

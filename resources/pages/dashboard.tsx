@@ -8,6 +8,7 @@ import {Todo} from "../components/Todo";
 import {completeTodo, deferTodo, deleteTodo, toggleTimer} from "../components/Actions";
 import {DateControls} from "../components/DateControls";
 import {php} from "@markhuot/synapse/php";
+import { Triage } from '../components/Triage';
 
 const reorderTodos = (orderedIds) => php`
     use \App\Models\Todo;
@@ -28,7 +29,13 @@ const updateNotes = (day, contents) => php`
     ]);
 `.execute();
 
-export default function Dashboard({ date, todos, notes }) {
+const todaysDate = [
+    new Date().getFullYear(),
+    String(new Date().getMonth() + 1).padStart(2, '0'),
+    String(new Date().getDate()).padStart(2, '0'),
+].join('-');
+
+export default function Dashboard({ date, todos, triage, notes }) {
     function handleDragEnd(event) {
         const ids = todos.map(todo => todo.id);
         const oldIndex = ids.indexOf(event.active.id);
@@ -74,6 +81,7 @@ export default function Dashboard({ date, todos, notes }) {
                     <DateControls date={date}/>
                     <button className="text-slate-400 hover:text-black hover:bg-slate-100 rounded inline-block px-2" onClick={handleShare}>&#9099;</button>
                 </h1>
+                <Triage todos={triage}/>
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={todos.map(todo => todo.id)} strategy={verticalListSortingStrategy}>
                         <ul className="mt-6">
@@ -84,7 +92,7 @@ export default function Dashboard({ date, todos, notes }) {
                 <AddTodo date={date}/>
             </div>
             <div className="md:w-1/2 bg-slate-50 relative flex-grow min-h-[50vh]">
-                <textarea className="w-full h-full py-14 px-10 bg-transparent peer resize-none" placeholder=" " onInput={(event) => updateNotes(date, event.target.value)}>{notes?.contents}</textarea>
+                <textarea className="w-full h-full py-14 px-10 bg-transparent peer resize-none" placeholder=" " onInput={(event) => updateNotes(date, event.target.value)} value={notes?.content}></textarea>
                 <p className="hidden peer-placeholder-shown:block pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-300">If you fail to plan, you plan to fail</p>
             </div>
         </div>

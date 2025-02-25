@@ -5,8 +5,11 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { setRequestHandler } from '@markhuot/synapse/php';
 
-setRequestHandler((options) => {
-  return router.post(options.url, options.body, options);
+setRequestHandler(async (options) => {
+  return router.post(options.url, options.body, {...options, preserveScroll: true});
+
+  // const response = await axios.post(options.url, options.body, options);
+  // return response.data;
 })
 
 createInertiaApp({

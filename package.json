@@ -23,7 +23,7 @@
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@inertiajs/react": "^2.0.3",
-        "@markhuot/synapse": "^1.0.4",
+        "@markhuot/synapse": "^1.0.5",
         "@rollup/pluginutils": "^5.1.4",
         "date-fns": "^4.1.0",
         "react": "^19.0.0",

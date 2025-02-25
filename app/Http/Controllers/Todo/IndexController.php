@@ -13,9 +13,16 @@ class IndexController extends Controller
      */
     public function __invoke(Request $request)
     {
+        $date = CarbonImmutable::createFromDate($request->date('date'))
+            ->startOfDay();
+
+        $today = CarbonImmutable::now()
+            ->startOfDay();
+
         return inertia('dashboard', [
-            'date' => $date = CarbonImmutable::createFromDate($request->date('date'))->startOfDay()->format('Y-m-d'),
-            'todos' => auth()->user()->todos()->where('day', '=', $date)->orderBy('sort_order')->get(),
+            'date' => $date->format('Y-m-d'),
+            'todos' => auth()->user()->todos()->forDay($date)->orderBy('sort_order')->get(),
+            'triage' => $date->isSameDay($today) ? auth()->user()->todos()->forDay($today->subDay())->where('completed', '=', false)->where('ignored_when_late', '=', false)->get() : [],
             'notes' => auth()->user()->notes()->where('day', '=', $date)->first(),
         ]);
     }

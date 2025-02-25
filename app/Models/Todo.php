@@ -67,9 +67,9 @@ class Todo extends Model
         $this->timer_started_at = null;
     }
 
-    public function scopeForDay(Builder $builder, string|Carbon $day)
+    public function scopeForDay(Builder $builder, string|Carbon|CarbonImmutable $day)
     {
-        if ($day instanceof Carbon) {
+        if ($day instanceof Carbon || $day instanceof CarbonImmutable) {
             $day = $day->format('Y-m-d');
         }
 
